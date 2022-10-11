@@ -1,0 +1,2 @@
+homeassistant
+git+https://github.com/Przemko92/vaillant-netatmo-api.git

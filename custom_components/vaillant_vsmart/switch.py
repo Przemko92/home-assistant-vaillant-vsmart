@@ -9,7 +9,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from vaillant_netatmo_api import ApiException, SetpointMode
+from vaillant_netatmo_api_mod import ApiException, SetpointMode
 
 from .const import DOMAIN
 from .entity import VaillantCoordinator, VaillantEntity

@@ -11,7 +11,7 @@ from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
     UpdateFailed,
 )
-from vaillant_netatmo_api import (
+from vaillant_netatmo_api_mod import (
     ApiException,
     Device,
     Module,

@@ -7,7 +7,7 @@
       "name": "Python: Attach Local",
       "type": "python",
       "request": "attach",
-      "port": 8123,
+      "port": 5678,
       "host": "localhost",
       "justMyCode": false,
       "pathMappings": [

@@ -10,7 +10,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_CLIENT_ID, CONF_CLIENT_SECRET, CONF_TOKEN
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.helpers.httpx_client import get_async_client
-from vaillant_netatmo_api import ThermostatClient, Token, TokenStore
+from vaillant_netatmo_api_mod import ThermostatClient, Token, TokenStore
 
 from .const import (
     DOMAIN,

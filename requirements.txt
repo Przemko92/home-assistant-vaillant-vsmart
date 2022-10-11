@@ -1,2 +1,2 @@
 homeassistant
-git+https://github.com/Przemko92/vaillant-netatmo-api/releases/tag/0.9.0
+git+https://github.com/Przemko92/vaillant-netatmo-api

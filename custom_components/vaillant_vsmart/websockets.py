@@ -12,7 +12,7 @@ from homeassistant.components.websocket_api import (
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_registry import EntityRegistry
 
-from vaillant_netatmo_api.thermostat import Program
+from vaillant_netatmo_api_mod.thermostat import Program
 
 from .const import DOMAIN, SWITCH, SELECT
 from .entity import VaillantCoordinator

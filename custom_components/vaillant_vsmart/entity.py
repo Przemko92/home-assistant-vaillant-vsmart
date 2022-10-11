@@ -80,8 +80,12 @@ class VaillantCoordinator(DataUpdateCoordinator[VaillantData]):
                 devices
             )
 
+            energy_usage = await self._get_energy_usage_measurements_for_all_devices(
+                devices
+            )
+
             self._debug_log(devices)
-            self._update_measured_data(devices, measurements)
+            self._update_measured_data(devices, measurements, energy_usage)
             self._debug_log(devices)
 
             return VaillantData(self._client, devices)
@@ -120,14 +124,48 @@ class VaillantCoordinator(DataUpdateCoordinator[VaillantData]):
 
         return await asyncio.gather(*temperature_tasks)
 
+    async def _get_energy_usage_measurements_for_all_devices(
+        self, devices: list[Device]
+    ) -> list[list[MeasurementItem]]:
+        gas_usage_tasks = []
+
+        start_time = datetime.now() - timedelta(days=7)
+
+        for device in devices:
+            for module in device.modules:
+                gas_heating_task = self._client.async_get_measure(
+                    device.id,
+                    module.id,
+                    MeasurementType.SUM_ENERGY_GAS_HEATING,
+                    MeasurementScale.DAY,
+                    start_time,
+                )
+                gas_usage_tasks.append(gas_heating_task)
+
+                gas_water_task = self._client.async_get_measure(
+                    device.id,
+                    module.id,
+                    MeasurementType.SUM_ENERGY_GAS_WATER,
+                    MeasurementScale.DAY,
+                    start_time,
+                )
+                gas_usage_tasks.append(gas_water_task)
+
+        return await asyncio.gather(*gas_usage_tasks)
+
     def _debug_log(self, devices: list[Device]) -> None:
         for device in devices:
             for module in device.modules:
                 _LOGGER.debug(f"_temperature_: {module.measured.temperature}")
                 _LOGGER.debug(f"setpoint_temp: {module.measured.setpoint_temp}")
+                _LOGGER.debug(f"gas_heating_usage: {module.measured.gas_heating_usage}")
+                _LOGGER.debug(f"gas_water_usage: {module.measured.gas_water_usage}")
 
     def _update_measured_data(
-        self, devices: list[Device], measurements: list[list[MeasurementItem]]
+        self,
+        devices: list[Device],
+        measurements: list[list[MeasurementItem]],
+        energy_usage: list[list[MeasurementItem]],
     ) -> None:
         i = 0
 
@@ -140,6 +178,14 @@ class VaillantCoordinator(DataUpdateCoordinator[VaillantData]):
                     measurements[i + 1], module.measured.setpoint_temp
                 )
 
+                module.measured.gas_heating_usage = self._get_energy_measurement_value(
+                    energy_usage[i], module.measured.gas_heating_usage
+                )
+
+                module.measured.gas_water_usage = self._get_energy_measurement_value(
+                    energy_usage[i + 1], module.measured.gas_water_usage
+                )
+
                 i += 2
 
     def _get_measurement_value(
@@ -150,6 +196,15 @@ class VaillantCoordinator(DataUpdateCoordinator[VaillantData]):
         measure = measurements[-1] if measurements else None
 
         return measure.value[-1] if measure and measure.value else default_value
+
+    def _get_energy_measurement_value(
+        self,
+        measurements: list[MeasurementItem],
+        default_value: list[float],
+    ) -> list[float]:
+        measure = measurements[-1] if measurements else None
+
+        return measure.value if measure and measure.value else default_value
 
 
 class VaillantEntity(CoordinatorEntity[VaillantData]):

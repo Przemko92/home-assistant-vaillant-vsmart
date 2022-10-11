@@ -13,6 +13,6 @@
     "@MislavMandaric"
   ],
   "requirements": [
-    "vaillant-netatmo-api==0.8.1"
+    "vaillant-netatmo-api @ git+git://github.com/Przemko92/vaillant-netatmo-api.git"
   ]
 }
